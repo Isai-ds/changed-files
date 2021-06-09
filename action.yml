@@ -1,11 +1,32 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
-inputs:
-  milliseconds: # change this
+name : 'Get Changed Files'
+description : 'Get the changed files in a pull request or push commits'
+author : 'Coke.com'
+inputs :
+  github_token : 
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'Github token to make API requests'
+    default: ${{ github.token}}
+  base_ref : 
+    description : 'The base commit or target commit of the pull request in a workflow run'
+    default : ${{ github.event.pull_request.base.ref}}
+  head_ref : 
+    description : 'The merge commit created by github to test test whether the pull request can be automatically merged into the base branch.'
+    default : ${{ github.event.pull_request.head.ref}}
+
+outputs : 
+  all : 
+    description : 'JSON string with all changed files'
+  added :
+    description : 'JSON string with only files added'  
+  deleted : 
+    description : 'JSON string with only files deleted'
+  modified :
+    description : 'JSON string with only files modified'
+  renamed :
+    description : 'JSON string with only files renamed'
+  changed :
+    description : 'JSON string with only files with type (i.e. regular file, symlink, submodule)'
+
 runs:
   using: 'node12'
   main: 'dist/index.js'

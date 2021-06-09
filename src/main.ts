@@ -1,16 +1,18 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import * as GithubAPIHelper from './github-api-helper'
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
+    const base = core.getInput('base_ref')
+    const head = core.getInput('head_ref')
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    core.info(`Base ref: ${base}`)
+    core.info(`Head ref: ${head}`)
 
-    core.setOutput('time', new Date().toTimeString())
+    const githubAPIHelper = GithubAPIHelper.getInstance()
+
+    const response = await githubAPIHelper.compareCommits(base, head)
+    core.debug(`Response : ${response}`)
   } catch (error) {
     core.setFailed(error.message)
   }
