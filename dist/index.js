@@ -48,17 +48,36 @@ class GitAuthAPI {
         const githubToken = core.getInput('github_token', { required: true });
         this.octokit = github.getOctokit(githubToken);
     }
-    compareCommits(base, head) {
+    getFiles(base, head) {
         return __awaiter(this, void 0, void 0, function* () {
             const baseHead = `${base}...${head}`;
+            const result = [];
+            let files = [];
             core.debug(`Build baseHead : ${baseHead}`);
+            files = yield this.compareCommits(baseHead);
+            if (files === undefined) {
+                throw new Error(`Error getting the files comparing the branches ${baseHead}`);
+            }
+            else {
+                for (const f of files) {
+                    result.push(f);
+                }
+            }
+            return result;
+        });
+    }
+    compareCommits(baseHead) {
+        return __awaiter(this, void 0, void 0, function* () {
             const response = yield this.octokit.rest.repos.compareCommitsWithBasehead({
                 owner: github.context.repo.owner,
                 repo: github.context.repo.repo,
                 basehead: baseHead
             });
-            core.debug(`Getting response : ${response}`);
-            return response;
+            if (response.status !== 200) {
+                const errorMessage = `Error comparing the branches ${baseHead}. Response status code: ${response.status}`;
+                throw new Error(errorMessage);
+            }
+            return response.data.files;
         });
     }
 }
@@ -110,9 +129,8 @@ function run() {
             core.info(`Base ref: ${base}`);
             core.info(`Head ref: ${head}`);
             const githubAPIHelper = GithubAPIHelper.getInstance();
-            const response = yield githubAPIHelper.compareCommits(base, head);
-            const jsonResponse = JSON.stringify(response);
-            core.debug(`Response : ${jsonResponse}`);
+            const files = yield githubAPIHelper.getFiles(base, head);
+            core.debug(`Response : ${JSON.stringify(files)}`);
         }
         catch (error) {
             core.setFailed(error.message);
