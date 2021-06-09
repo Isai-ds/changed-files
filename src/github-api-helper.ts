@@ -3,7 +3,7 @@ import * as github from '@actions/github'
 
 export interface IGitAuthAPI {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  compareCommits(base: string, head: string): Promise<void>
+  compareCommits(base: string, head: string): Promise<object>
 }
 
 export function getInstance(): IGitAuthAPI {
@@ -18,9 +18,10 @@ class GitAuthAPI {
     this.octokit = github.getOctokit(githubToken)
   }
 
-  async compareCommits(base: string, head: string): Promise<void> {
+  async compareCommits(base: string, head: string): Promise<object> {
     const baseHead = `${base}...${head}`
-    await this.octokit.rest.repos.compareCommitsWithBasehead({
+    core.debug(`Build baseHead : ${baseHead}`)
+    return await this.octokit.rest.repos.compareCommitsWithBasehead({
       owner: github.context.repo.owner,
       repo: github.context.repo.repo,
       basehead: baseHead

@@ -51,7 +51,8 @@ class GitAuthAPI {
     compareCommits(base, head) {
         return __awaiter(this, void 0, void 0, function* () {
             const baseHead = `${base}...${head}`;
-            yield this.octokit.rest.repos.compareCommitsWithBasehead({
+            core.debug(`Build baseHead : ${baseHead}`);
+            return yield this.octokit.rest.repos.compareCommitsWithBasehead({
                 owner: github.context.repo.owner,
                 repo: github.context.repo.repo,
                 basehead: baseHead
