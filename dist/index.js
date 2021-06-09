@@ -45,7 +45,7 @@ function getInstance() {
 exports.getInstance = getInstance;
 class GitAuthAPI {
     constructor() {
-        const githubToken = core.getInput('token', { required: true });
+        const githubToken = core.getInput('github_token', { required: true });
         this.octokit = github.getOctokit(githubToken);
     }
     compareCommits(base, head) {
