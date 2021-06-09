@@ -52,11 +52,13 @@ class GitAuthAPI {
         return __awaiter(this, void 0, void 0, function* () {
             const baseHead = `${base}...${head}`;
             core.debug(`Build baseHead : ${baseHead}`);
-            return yield this.octokit.rest.repos.compareCommitsWithBasehead({
+            const response = yield this.octokit.rest.repos.compareCommitsWithBasehead({
                 owner: github.context.repo.owner,
                 repo: github.context.repo.repo,
                 basehead: baseHead
             });
+            core.debug(`Getting response : ${response}`);
+            return response;
         });
     }
 }
@@ -109,7 +111,8 @@ function run() {
             core.info(`Head ref: ${head}`);
             const githubAPIHelper = GithubAPIHelper.getInstance();
             const response = yield githubAPIHelper.compareCommits(base, head);
-            core.debug(`Response : ${response}`);
+            const jsonResponse = JSON.stringify(response);
+            core.debug(`Response : ${jsonResponse}`);
         }
         catch (error) {
             core.setFailed(error.message);

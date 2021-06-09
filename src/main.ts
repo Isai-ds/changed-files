@@ -12,7 +12,8 @@ async function run(): Promise<void> {
     const githubAPIHelper = GithubAPIHelper.getInstance()
 
     const response = await githubAPIHelper.compareCommits(base, head)
-    core.debug(`Response : ${response}`)
+    const jsonResponse = JSON.stringify(response)
+    core.debug(`Response : ${jsonResponse}`)
   } catch (error) {
     core.setFailed(error.message)
   }
