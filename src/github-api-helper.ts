@@ -14,7 +14,7 @@ class GitAuthAPI {
   private octokit
 
   constructor() {
-    const githubToken = core.getInput('token', {required: true})
+    const githubToken = core.getInput('github_token', {required: true})
     this.octokit = github.getOctokit(githubToken)
   }
 

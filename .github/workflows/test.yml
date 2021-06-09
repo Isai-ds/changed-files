@@ -22,4 +22,5 @@ jobs:
       - uses: ./
         with:
           github_token: ${{ github.token}}
-
+          base_ref: ${{ github.event.pull_request.base.ref}}
+          head_ref: ${{ github.event.pull_request.head.ref}}
