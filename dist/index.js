@@ -2,6 +2,133 @@ require('./sourcemap-register.js');module.exports =
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 148:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getInstance = void 0;
+const core = __importStar(__webpack_require__(186));
+const GithubAPIHelper = __importStar(__webpack_require__(138));
+function getInstance() {
+    return new FileCommited();
+}
+exports.getInstance = getInstance;
+class FileCommited {
+    getAllFiles() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const base = core.getInput('base_ref');
+            const head = core.getInput('head_ref');
+            core.info(`Base ref: ${base}`);
+            core.info(`Head ref: ${head}`);
+            const githubAPIHelper = GithubAPIHelper.getInstance();
+            const files = yield githubAPIHelper.getFilesInPullRequest(base, head);
+            const result = this.build(files);
+            return result['all'];
+        });
+    }
+    build(files) {
+        const added = [];
+        const deleted = [];
+        const modified = [];
+        const renamed = [];
+        const changed = [];
+        const result = {
+            added: {
+                files: added
+            },
+            deleted: {
+                files: deleted
+            },
+            modified: {
+                files: modified
+            },
+            renamed: {
+                files: renamed
+            },
+            changed: {
+                files: changed
+            },
+            all: {
+                added: {
+                    files: added
+                },
+                deleted: {
+                    files: changed
+                },
+                modified: {
+                    files: modified
+                },
+                renamed: {
+                    files: renamed
+                },
+                changed: {
+                    files: changed
+                }
+            }
+        };
+        for (const f of files) {
+            const fc = {
+                filename: f.filename,
+                status: f.status,
+                sha: f.sha
+            };
+            switch (f.status) {
+                case 'added':
+                    result['added']['files'].push(fc);
+                    break;
+                case 'deleted':
+                    result['deleted']['files'].push(fc);
+                    break;
+                case 'modified':
+                    result['modified']['files'].push(fc);
+                    break;
+                case 'renamed':
+                    result['renamed']['files'].push(fc);
+                    break;
+                case 'changed':
+                    result['changed']['files'].push(fc);
+                    break;
+                default:
+                    core.debug(`The file ${f.filename} has a non status supported '${f.status}'`);
+            }
+        }
+        return result;
+    }
+}
+
+
+/***/ }),
+
 /***/ 138:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
@@ -48,7 +175,7 @@ class GitAuthAPI {
         const githubToken = core.getInput('github_token', { required: true });
         this.octokit = github.getOctokit(githubToken);
     }
-    getFiles(base, head) {
+    getFilesInPullRequest(base, head) {
         return __awaiter(this, void 0, void 0, function* () {
             const baseHead = `${base}...${head}`;
             const result = [];
@@ -120,17 +247,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__webpack_require__(186));
-const GithubAPIHelper = __importStar(__webpack_require__(138));
+const fileHelper = __importStar(__webpack_require__(148));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const base = core.getInput('base_ref');
-            const head = core.getInput('head_ref');
-            core.info(`Base ref: ${base}`);
-            core.info(`Head ref: ${head}`);
-            const githubAPIHelper = GithubAPIHelper.getInstance();
-            const files = yield githubAPIHelper.getFiles(base, head);
-            core.debug(`Response : ${JSON.stringify(files)}`);
+            const files = fileHelper.getInstance().getAllFiles();
+            core.debug(`${JSON.stringify(files)}`);
         }
         catch (error) {
             core.setFailed(error.message);
