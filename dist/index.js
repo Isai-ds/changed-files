@@ -106,23 +106,18 @@ class FileCommited {
             switch (f.status) {
                 case 'added':
                     result['added']['files'].push(fc);
-                    core.debug(`File commited: ${result['added']['files']}`);
                     break;
                 case 'deleted':
                     result['deleted']['files'].push(fc);
-                    core.debug(`File commited: ${result['deleted']['files']}`);
                     break;
                 case 'modified':
                     result['modified']['files'].push(fc);
-                    core.debug(`File commited: ${result['modified']['files']}`);
                     break;
                 case 'renamed':
                     result['renamed']['files'].push(fc);
-                    core.debug(`File commited: ${result['renamed']['files']}`);
                     break;
                 case 'changed':
                     result['changed']['files'].push(fc);
-                    core.debug(`File commited: ${result['changed']['files']}`);
                     break;
                 default:
                     core.debug(`The file ${f.filename} has a non status supported '${f.status}'`);
@@ -257,7 +252,7 @@ const fileHelper = __importStar(__webpack_require__(148));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const files = fileHelper.getInstance().getAllFiles();
+            const files = yield fileHelper.getInstance().getAllFiles();
             core.debug(`${JSON.stringify(files)}`);
         }
         catch (error) {
