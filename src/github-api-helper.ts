@@ -2,12 +2,12 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import {components} from '@octokit/openapi-types'
 
-export type FilesCommited = components['schemas']['diff-entry'][]
-type FileResponse = FilesCommited | undefined
+export type DiffEntry = components['schemas']['diff-entry'][]
+type FileResponse = DiffEntry | undefined
 
 export interface IGitAuthAPI {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getFiles(base: string, head: string): Promise<FileResponse>
+  getFilesInPullRequest(base: string, head: string): Promise<DiffEntry>
 }
 
 export function getInstance(): IGitAuthAPI {
@@ -22,9 +22,9 @@ class GitAuthAPI {
     this.octokit = github.getOctokit(githubToken)
   }
 
-  async getFiles(base: string, head: string): Promise<FilesCommited> {
+  async getFilesInPullRequest(base: string, head: string): Promise<DiffEntry> {
     const baseHead = `${base}...${head}`
-    const result = [] as FilesCommited
+    const result = [] as DiffEntry
     let files = [] as FileResponse
 
     core.debug(`Build baseHead : ${baseHead}`)
