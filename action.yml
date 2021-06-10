@@ -1,6 +1,7 @@
 name : 'Get Changed Files'
 description : 'Get the changed files in a pull request or push commits'
 author : 'Coke.com'
+
 inputs :
   github_token : 
     required: true
@@ -11,6 +12,8 @@ inputs :
   head_ref : 
     description : 'The merge commit created by github to test test whether the pull request can be automatically merged into the base branch.'
     default : ${{ github.event.pull_request.head.ref}}
+  certificate_path:
+    
 
 outputs : 
   all : 

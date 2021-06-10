@@ -106,23 +106,18 @@ class FileCommited {
       switch (f.status) {
         case 'added':
           result['added']['files'].push(fc)
-          core.debug(`File commited: ${result['added']['files']}`)
           break
         case 'deleted':
           result['deleted']['files'].push(fc)
-          core.debug(`File commited: ${result['deleted']['files']}`)
           break
         case 'modified':
           result['modified']['files'].push(fc)
-          core.debug(`File commited: ${result['modified']['files']}`)
           break
         case 'renamed':
           result['renamed']['files'].push(fc)
-          core.debug(`File commited: ${result['renamed']['files']}`)
           break
         case 'changed':
           result['changed']['files'].push(fc)
-          core.debug(`File commited: ${result['changed']['files']}`)
           break
         default:
           core.debug(
