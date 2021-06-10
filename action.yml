@@ -8,11 +8,17 @@ inputs :
     description: 'Github token to make API requests'
   base_ref : 
     description : 'The base commit or target commit of the pull request in a workflow run'
-    default : ${{ github.event.pull_request.base.ref}}
   head_ref : 
     description : 'The merge commit created by github to test test whether the pull request can be automatically merged into the base branch.'
-    default : ${{ github.event.pull_request.head.ref}}    
-
+  client_id:
+    description : 'Ouath client ID (Consumer key of the connected app)'
+  user_name:
+    description : 'Authentication username'
+  jwt_key_file : 
+    description : 'Path to a file containing the private key'
+  instance_url :
+    description : 'login URL of the instance to connect'
+    
 outputs : 
   all : 
     description : 'JSON string with all changed files'
