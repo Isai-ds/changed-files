@@ -18,7 +18,11 @@ inputs :
     description : 'Path to a file containing the private key'
   instance_url :
     description : 'login URL of the instance to connect'
-    
+  decryption_key : 
+    description : 'Key of encrypted certificate key'
+  decryption_iv :
+    description : 'IV of encrypted certificate key'
+
 outputs : 
   all : 
     description : 'JSON string with all changed files'
