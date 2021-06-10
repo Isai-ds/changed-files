@@ -11,9 +11,7 @@ inputs :
     default : ${{ github.event.pull_request.base.ref}}
   head_ref : 
     description : 'The merge commit created by github to test test whether the pull request can be automatically merged into the base branch.'
-    default : ${{ github.event.pull_request.head.ref}}
-  certificate_path:
-    
+    default : ${{ github.event.pull_request.head.ref}}    
 
 outputs : 
   all : 
