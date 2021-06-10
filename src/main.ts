@@ -30,14 +30,14 @@ async function run(): Promise<void> {
       decryptionIV
     ])
 
-    const authInfo = await AuthInfo.create({
+    /*const authInfo = await AuthInfo.create({
       username: userName,
       oauth2Options: {
         loginUrl: instanceUrl,
         clientId: consumerKey,
         privateKeyFile: jwtKeyFile
       }
-    })
+    })*/
   } catch (error) {
     core.setFailed(error.message)
   }
