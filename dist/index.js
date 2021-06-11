@@ -254,7 +254,7 @@ const sfdc = __importStar(__webpack_require__(6218));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            sfdxIntaller.install();
+            yield sfdxIntaller.install();
             const files = yield fileHelper.getInstance().getAllFiles();
             core.debug(`${JSON.stringify(files)}`);
             const sfInstance = sfdc.getInstance();
