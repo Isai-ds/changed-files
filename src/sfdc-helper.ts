@@ -67,7 +67,7 @@ class Salesforce {
   async describeMetadata(): Promise<metadata> {
     const result = {} as metadata
     const output = await exec.getExecOutput('sfdx', [
-      'orce:mdapi:describemetadata',
+      'force:mdapi:describemetadata',
       '-u',
       'org',
       '--json'

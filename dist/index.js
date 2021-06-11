@@ -355,7 +355,7 @@ class Salesforce {
         return __awaiter(this, void 0, void 0, function* () {
             const result = {};
             const output = yield exec.getExecOutput('sfdx', [
-                'orce:mdapi:describemetadata',
+                'force:mdapi:describemetadata',
                 '-u',
                 'org',
                 '--json'
