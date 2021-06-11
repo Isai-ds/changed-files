@@ -5,7 +5,7 @@ import * as sfdc from './sfdc-helper'
 
 async function run(): Promise<void> {
   try {
-    sfdxIntaller.install()
+    await sfdxIntaller.install()
 
     const files = await fileHelper.getInstance().getAllFiles()
     core.debug(`${JSON.stringify(files)}`)
