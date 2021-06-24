@@ -1,18 +1,18 @@
 import * as core from '@actions/core'
-import * as GithubAPIHelper from './github-api-helper'
+import * as fileHelper from './file-helper'
+import * as sfdxIntaller from './sfdx-installer'
+import * as sfdc from './sfdc-helper'
 
 async function run(): Promise<void> {
   try {
-    const base = core.getInput('base_ref')
-    const head = core.getInput('head_ref')
+    await sfdxIntaller.install()
 
-    core.info(`Base ref: ${base}`)
-    core.info(`Head ref: ${head}`)
+    const files = await fileHelper.getInstance().getAllFiles()
+    core.debug(`${JSON.stringify(files)}`)
 
-    const githubAPIHelper = GithubAPIHelper.getInstance()
-
-    const response = await githubAPIHelper.compareCommits(base, head)
-    core.debug(`Response : ${response}`)
+    const sfInstance = sfdc.getInstance()
+    await sfInstance.login()
+    await sfInstance.describeMetadata()
   } catch (error) {
     core.setFailed(error.message)
   }

@@ -1,10 +1,8 @@
 name: 'build-test'
 on: # rebuild any PRs and main branch changes
   pull_request:
-  push:
     branches:
       - main
-      - 'releases/*'
 
 jobs:
   build: # make sure build/ci work properly
@@ -26,6 +24,12 @@ jobs:
           echo "$GITHUB_CONTEXT"
       - uses: ./
         with:
-          github_token: ${{ github.token}}
-          base_ref: ${{ github.event.pull_request.base.ref}}
-          head_ref: ${{ github.event.pull_request.head.ref}}
+          github_token: ${{ github.token }}
+          base_ref: ${{ github.event.pull_request.base.ref }}
+          head_ref: ${{ github.event.pull_request.head.ref }}
+          client_id: ${{ secrets.CLIENT_ID }}
+          user_name: ${{ secrets.USER_NAME }}
+          jwt_key_file: assets/server.key.enc
+          instance_url: 'https://login.salesforce.com'
+          decryption_key: ${{ secrets.DECRYPTION_KEY }}
+          decryption_iv: ${{ secrets.DECRYPTION_IV }}

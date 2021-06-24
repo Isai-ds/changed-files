@@ -1,9 +1,13 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
+import {components} from '@octokit/openapi-types'
+
+export type DiffEntry = components['schemas']['diff-entry'][]
+type FileResponse = DiffEntry | undefined
 
 export interface IGitAuthAPI {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  compareCommits(base: string, head: string): Promise<void>
+  getFilesInPullRequest(base: string, head: string): Promise<DiffEntry>
 }
 
 export function getInstance(): IGitAuthAPI {
@@ -18,12 +22,36 @@ class GitAuthAPI {
     this.octokit = github.getOctokit(githubToken)
   }
 
-  async compareCommits(base: string, head: string): Promise<void> {
+  async getFilesInPullRequest(base: string, head: string): Promise<DiffEntry> {
     const baseHead = `${base}...${head}`
-    await this.octokit.rest.repos.compareCommitsWithBasehead({
+    const result = [] as DiffEntry
+    let files = [] as FileResponse
+
+    core.debug(`Build baseHead : ${baseHead}`)
+    files = await this.compareCommits(baseHead)
+
+    if (files === undefined) {
+      throw new Error(
+        `Error getting the files comparing the branches ${baseHead}`
+      )
+    } else {
+      for (const f of files) {
+        result.push(f)
+      }
+    }
+    return result
+  }
+
+  async compareCommits(baseHead: string): Promise<FileResponse> {
+    const response = await this.octokit.rest.repos.compareCommitsWithBasehead({
       owner: github.context.repo.owner,
       repo: github.context.repo.repo,
       basehead: baseHead
     })
+    if (response.status !== 200) {
+      const errorMessage = `Error comparing the branches ${baseHead}. Response status code: ${response.status}`
+      throw new Error(errorMessage)
+    }
+    return response.data.files
   }
 }
