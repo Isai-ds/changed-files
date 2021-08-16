@@ -102,7 +102,7 @@ class Salesforce {
     core.info(`${JSON.stringify(r)}`)
     core.info(`${JSON.stringify(r['classes'].inFolder)}`)
     */
-    core.info(`${JSON.stringify(definition.get('classes')?.xmlName)}`)
+    core.info(`${JSON.stringify(definition.get('classes'))}`)
     return definition
   }
 }

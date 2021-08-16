@@ -365,7 +365,6 @@ class Salesforce {
         });
     }
     describeMetadata(grouping) {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             const definition = new Map();
             yield this.getDescribeMetadata();
@@ -380,7 +379,7 @@ class Salesforce {
             core.info(`${JSON.stringify(r)}`)
             core.info(`${JSON.stringify(r['classes'].inFolder)}`)
             */
-            core.info(`${JSON.stringify((_a = definition.get('classes')) === null || _a === void 0 ? void 0 : _a.xmlName)}`);
+            core.info(`${JSON.stringify(definition.get('classes'))}`);
             return definition;
         });
     }
