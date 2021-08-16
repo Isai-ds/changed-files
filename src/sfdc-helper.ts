@@ -88,12 +88,12 @@ class Salesforce {
     await this.getDescribeMetadata()
 
     definition = this.metadataDescribeResult.metadataObjects
-    definition.reduce((m: metadata, describe: metadata): metadata => {
+    const r = definition.reduce((m: metadata, describe: metadata): metadata => {
       m[describe[grouping]] = describe
-      core.info(`${JSON.stringify(m[describe[grouping]])}`)
       return m
     }, {})
-
+    core.info(`${JSON.stringify(r)}`)
+    core.info(`${JSON.stringify(r['classes'])}`)
     return definition
   }
 }

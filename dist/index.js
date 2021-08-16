@@ -369,11 +369,12 @@ class Salesforce {
             let definition = {};
             yield this.getDescribeMetadata();
             definition = this.metadataDescribeResult.metadataObjects;
-            definition.reduce((m, describe) => {
+            const r = definition.reduce((m, describe) => {
                 m[describe[grouping]] = describe;
-                core.info(`${JSON.stringify(m[describe[grouping]])}`);
                 return m;
             }, {});
+            core.info(`${JSON.stringify(r)}`);
+            core.info(`${JSON.stringify(r['classes'])}`);
             return definition;
         });
     }
