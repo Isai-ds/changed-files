@@ -65,7 +65,7 @@ class Salesforce {
   }
 
   async describeMetadata(): Promise<metadata> {
-    const result = {} as metadata
+    let result = {} as metadata
     const output = await exec.getExecOutput('sfdx', [
       'force:mdapi:describemetadata',
       '-u',
@@ -74,11 +74,9 @@ class Salesforce {
     ])
     core.info(`stdout::: ${output.stdout}`)
     const stdOut = JSON.parse(output.stdout)
-    core.info(`stdout.metadataObjects::: ${stdOut.result.metadataObjects}`)
+    result = stdOut.result
     core.info(
-      `stdout.metadataObjects.string ${JSON.stringify(
-        stdOut.result.metadataObjects
-      )}`
+      `result.metadataObjects.string ${JSON.stringify(result.metadataObjects)}`
     )
     return result
   }

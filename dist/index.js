@@ -353,7 +353,7 @@ class Salesforce {
     }
     describeMetadata() {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = {};
+            let result = {};
             const output = yield exec.getExecOutput('sfdx', [
                 'force:mdapi:describemetadata',
                 '-u',
@@ -362,8 +362,8 @@ class Salesforce {
             ]);
             core.info(`stdout::: ${output.stdout}`);
             const stdOut = JSON.parse(output.stdout);
-            core.info(`stdout.metadataObjects::: ${stdOut.result.metadataObjects}`);
-            core.info(`stdout.metadataObjects.string ${JSON.stringify(stdOut.result.metadataObjects)}`);
+            result = stdOut.result;
+            core.info(`result.metadataObjects.string ${JSON.stringify(result.metadataObjects)}`);
             return result;
         });
     }
