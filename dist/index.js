@@ -370,7 +370,14 @@ class Salesforce {
             yield this.getDescribeMetadata();
             const describeResult = this.metadataDescribeResult.metadataObjects;
             for (const item of describeResult) {
-                definition.set(grouping, item[grouping]);
+                const o = {};
+                o.childXmlNames = item.childXmlNames;
+                o.directoryName = item.directoryName;
+                o.inFolder = item.inFolder;
+                o.metaFile = item.metaFile;
+                o.suffix = item.suffix;
+                o.xmlName = item.xmlName;
+                definition.set(item[grouping], o);
             }
             /*const r = definition.reduce((m: metadata, describe: metadata): metadata => {
               m[describe[grouping]] = describe
