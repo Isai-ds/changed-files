@@ -351,21 +351,26 @@ class Salesforce {
             ]);
         });
     }
+    getDescribeMetadata() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.metadataDescribeResult) {
+                const output = yield exec.getExecOutput('sfdx', [
+                    'force:mdapi:describemetadata',
+                    '-u',
+                    'org',
+                    '--json'
+                ]);
+                this.metadataDescribeResult = JSON.parse(output.stdout).result;
+            }
+        });
+    }
     describeMetadata(grouping) {
         return __awaiter(this, void 0, void 0, function* () {
             let definition = {};
-            const output = yield exec.getExecOutput('sfdx', [
-                'force:mdapi:describemetadata',
-                '-u',
-                'org',
-                '--json'
-            ]);
-            const commandResult = JSON.parse(output.stdout).result;
-            definition = commandResult;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            commandResult.reduce((m, d) => {
-                core.info(`${m}...${d}`);
-                m[d[grouping]] = d;
+            yield this.getDescribeMetadata();
+            definition = this.metadataDescribeResult.metadataObjects;
+            definition.reduce((m, describe) => {
+                core.info(`${m}...${describe}`);
                 return m;
             }, {});
             return definition;

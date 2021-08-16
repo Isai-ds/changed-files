@@ -8,7 +8,12 @@ interface metadataObject {
   suffix?: string
   xmlName: string
 }
-interface metadata {
+
+type metadata = {
+  [key: string]: any
+}
+
+interface metadataDescribe {
   metadataObjects: metadataObject[]
   organizationNamespace: string
   partialSaveAllowed: boolean
@@ -25,6 +30,8 @@ export function getInstance(): ISalesforce {
 }
 
 class Salesforce {
+  metadataDescribeResult!: metadataDescribe
+
   async login(): Promise<void> {
     const consumerKey = core.getInput('client_id')
     const userName = core.getInput('user_name')
@@ -64,23 +71,28 @@ class Salesforce {
     ])
   }
 
+  private async getDescribeMetadata(): Promise<void> {
+    if (!this.metadataDescribeResult) {
+      const output = await exec.getExecOutput('sfdx', [
+        'force:mdapi:describemetadata',
+        '-u',
+        'org',
+        '--json'
+      ])
+      this.metadataDescribeResult = JSON.parse(output.stdout).result
+    }
+  }
+
   async describeMetadata(grouping: string): Promise<metadata> {
     let definition = {} as metadata
-    const output = await exec.getExecOutput('sfdx', [
-      'force:mdapi:describemetadata',
-      '-u',
-      'org',
-      '--json'
-    ])
-    const commandResult = JSON.parse(output.stdout).result
-    definition = commandResult
+    await this.getDescribeMetadata()
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    commandResult.reduce((m: any, d: any) => {
-      core.info(`${m}...${d}`)
-      m[d[grouping]] = d
+    definition = this.metadataDescribeResult.metadataObjects
+    definition.reduce((m: metadata, describe: metadata): metadata => {
+      core.info(`${m}...${describe}`)
       return m
     }, {})
+
     return definition
   }
 }
