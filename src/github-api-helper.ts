@@ -6,7 +6,6 @@ export type DiffEntry = components['schemas']['diff-entry'][]
 type FileResponse = DiffEntry | undefined
 
 export interface IGitAuthAPI {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getFilesInPullRequest(base: string, head: string): Promise<DiffEntry>
 }
 
