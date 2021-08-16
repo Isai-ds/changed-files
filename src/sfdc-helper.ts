@@ -17,7 +17,7 @@ interface metadata {
 
 export interface ISalesforce {
   login(): Promise<void>
-  describeMetadata(): Promise<metadata>
+  describeMetadata(grouping: string): Promise<metadata>
 }
 
 export function getInstance(): ISalesforce {
@@ -64,20 +64,23 @@ class Salesforce {
     ])
   }
 
-  async describeMetadata(): Promise<metadata> {
-    let result = {} as metadata
+  async describeMetadata(grouping: string): Promise<metadata> {
+    let definition = {} as metadata
     const output = await exec.getExecOutput('sfdx', [
       'force:mdapi:describemetadata',
       '-u',
       'org',
       '--json'
     ])
-    core.info(`stdout::: ${output.stdout}`)
-    const stdOut = JSON.parse(output.stdout)
-    result = stdOut.result
-    core.info(
-      `result.metadataObjects.string ${JSON.stringify(result.metadataObjects)}`
-    )
-    return result
+    const commandResult = JSON.parse(output.stdout).result
+    definition = commandResult
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    commandResult.reduce((m: any, d: any) => {
+      core.info(`${m}...${d}`)
+      m[d[grouping]] = d
+      return m
+    }, {})
+    return definition
   }
 }

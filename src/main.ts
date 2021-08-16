@@ -12,7 +12,7 @@ async function run(): Promise<void> {
 
     const sfInstance = sfdc.getInstance()
     await sfInstance.login()
-    await sfInstance.describeMetadata()
+    await sfInstance.describeMetadata('directoryName')
   } catch (error) {
     core.setFailed(error.message)
   }

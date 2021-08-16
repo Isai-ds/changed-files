@@ -259,7 +259,7 @@ function run() {
             core.debug(`${JSON.stringify(files)}`);
             const sfInstance = sfdc.getInstance();
             yield sfInstance.login();
-            yield sfInstance.describeMetadata();
+            yield sfInstance.describeMetadata('directoryName');
         }
         catch (error) {
             core.setFailed(error.message);
@@ -351,20 +351,24 @@ class Salesforce {
             ]);
         });
     }
-    describeMetadata() {
+    describeMetadata(grouping) {
         return __awaiter(this, void 0, void 0, function* () {
-            let result = {};
+            let definition = {};
             const output = yield exec.getExecOutput('sfdx', [
                 'force:mdapi:describemetadata',
                 '-u',
                 'org',
                 '--json'
             ]);
-            core.info(`stdout::: ${output.stdout}`);
-            const stdOut = JSON.parse(output.stdout);
-            result = stdOut.result;
-            core.info(`result.metadataObjects.string ${JSON.stringify(result.metadataObjects)}`);
-            return result;
+            const commandResult = JSON.parse(output.stdout).result;
+            definition = commandResult;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            commandResult.reduce((m, d) => {
+                core.info(`${m}...${d}`);
+                m[d[grouping]] = d;
+                return m;
+            }, {});
+            return definition;
         });
     }
 }
