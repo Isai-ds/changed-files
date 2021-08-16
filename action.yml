@@ -1,6 +1,6 @@
 name : 'Get Changed Files'
 description : 'Get the changed files in a pull request or push commits'
-author : 'Coke.com'
+author : 'Isai Desales'
 
 inputs :
   github_token : 
