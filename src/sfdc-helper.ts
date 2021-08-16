@@ -89,7 +89,8 @@ class Salesforce {
 
     definition = this.metadataDescribeResult.metadataObjects
     definition.reduce((m: metadata, describe: metadata): metadata => {
-      core.info(`${m}...${describe}`)
+      m[describe[grouping]] = describe
+      core.info(`${JSON.stringify(m[describe[grouping]])}`)
       return m
     }, {})
 

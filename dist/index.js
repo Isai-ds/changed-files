@@ -370,7 +370,8 @@ class Salesforce {
             yield this.getDescribeMetadata();
             definition = this.metadataDescribeResult.metadataObjects;
             definition.reduce((m, describe) => {
-                core.info(`${m}...${describe}`);
+                m[describe[grouping]] = describe;
+                core.info(`${JSON.stringify(m[describe[grouping]])}`);
                 return m;
             }, {});
             return definition;
