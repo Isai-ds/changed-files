@@ -360,8 +360,10 @@ class Salesforce {
                 'org',
                 '--json'
             ]);
+            core.info(`stdout::: ${output.stdout}`);
             const stdOut = JSON.parse(output.stdout);
-            core.debug(`Output ${JSON.stringify(stdOut.metadataObjects)}`);
+            core.info(`stdout.object::: ${stdOut}`);
+            core.info(`stdout.object.string ${JSON.stringify(stdOut)}`);
             return result;
         });
     }
