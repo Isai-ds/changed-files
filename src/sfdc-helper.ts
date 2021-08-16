@@ -74,8 +74,12 @@ class Salesforce {
     ])
     core.info(`stdout::: ${output.stdout}`)
     const stdOut = JSON.parse(output.stdout)
-    core.info(`stdout.object::: ${stdOut}`)
-    core.info(`stdout.object.string ${JSON.stringify(stdOut)}`)
+    core.info(`stdout.metadataObjects::: ${stdOut.result.metadataObjects}`)
+    core.info(
+      `stdout.metadataObjects.string ${JSON.stringify(
+        stdOut.result.metadataObjects
+      )}`
+    )
     return result
   }
 }
