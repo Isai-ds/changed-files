@@ -368,7 +368,8 @@ class Salesforce {
         return __awaiter(this, void 0, void 0, function* () {
             const definition = new Map();
             yield this.getDescribeMetadata();
-            const describeResult = this.metadataDescribeResult.metadataObjects;
+            const describeResult = this.metadataDescribeResult
+                .metadataObjects;
             for (const item of describeResult) {
                 const o = {};
                 o.childXmlNames = item.childXmlNames;
@@ -379,14 +380,6 @@ class Salesforce {
                 o.xmlName = item.xmlName;
                 definition.set(item[grouping], o);
             }
-            /*const r = definition.reduce((m: metadata, describe: metadata): metadata => {
-              m[describe[grouping]] = describe
-              return m
-            }, {})
-            core.info(`${JSON.stringify(r)}`)
-            core.info(`${JSON.stringify(r['classes'].inFolder)}`)
-            */
-            core.info(`${JSON.stringify(definition.get('classes'))}`);
             return definition;
         });
     }

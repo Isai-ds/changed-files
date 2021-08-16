@@ -10,7 +10,7 @@ interface metadataObject {
 }
 
 type metadata = {
-  [key: string]: metadataObject
+  [key: string]: any
 }
 
 interface metadataDescribe {
@@ -87,11 +87,9 @@ class Salesforce {
     const definition = new Map<string, metadataObject>()
     await this.getDescribeMetadata()
 
-    type meta = {
-      [key: string]: any
-    }
+    const describeResult: metadata[] = this.metadataDescribeResult
+      .metadataObjects
 
-    const describeResult: meta[] = this.metadataDescribeResult.metadataObjects
     for (const item of describeResult) {
       const o = {} as metadataObject
       o.childXmlNames = item.childXmlNames
@@ -102,14 +100,6 @@ class Salesforce {
       o.xmlName = item.xmlName
       definition.set(item[grouping], o)
     }
-    /*const r = definition.reduce((m: metadata, describe: metadata): metadata => {
-      m[describe[grouping]] = describe
-      return m
-    }, {})
-    core.info(`${JSON.stringify(r)}`)
-    core.info(`${JSON.stringify(r['classes'].inFolder)}`)
-    */
-    core.info(`${JSON.stringify(definition.get('classes'))}`)
     return definition
   }
 }
