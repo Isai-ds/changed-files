@@ -10,7 +10,7 @@ interface metadataObject {
 }
 
 type metadata = {
-  [key: string]: any
+  [key: string]: metadataObject
 }
 
 interface metadataDescribe {
@@ -22,7 +22,7 @@ interface metadataDescribe {
 
 export interface ISalesforce {
   login(): Promise<void>
-  describeMetadata(grouping: string): Promise<metadata>
+  describeMetadata(grouping: string): Promise<Map<string, metadataObject>>
 }
 
 export function getInstance(): ISalesforce {
@@ -83,17 +83,26 @@ class Salesforce {
     }
   }
 
-  async describeMetadata(grouping: string): Promise<metadata> {
-    let definition = {} as metadata
+  async describeMetadata(grouping: string): Promise<Map<string, metadataObject>> {
+    const definition = new Map<string, metadataObject>()
     await this.getDescribeMetadata()
 
-    definition = this.metadataDescribeResult.metadataObjects
-    const r = definition.reduce((m: metadata, describe: metadata): metadata => {
+    type meta = {
+      [key: string]: any
+    }
+
+    const describeResult: meta[] = this.metadataDescribeResult.metadataObjects
+    for (const item of describeResult) {
+      definition.set(grouping, item[grouping])
+    }
+    /*const r = definition.reduce((m: metadata, describe: metadata): metadata => {
       m[describe[grouping]] = describe
       return m
     }, {})
     core.info(`${JSON.stringify(r)}`)
-    core.info(`${JSON.stringify(r['classes'])}`)
+    core.info(`${JSON.stringify(r['classes'].inFolder)}`)
+    */
+    core.info(`${JSON.stringify(definition.get('classes')?.xmlName)}`)
     return definition
   }
 }

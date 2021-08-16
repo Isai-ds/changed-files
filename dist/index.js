@@ -365,16 +365,22 @@ class Salesforce {
         });
     }
     describeMetadata(grouping) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            let definition = {};
+            const definition = new Map();
             yield this.getDescribeMetadata();
-            definition = this.metadataDescribeResult.metadataObjects;
-            const r = definition.reduce((m, describe) => {
-                m[describe[grouping]] = describe;
-                return m;
-            }, {});
-            core.info(`${JSON.stringify(r)}`);
-            core.info(`${JSON.stringify(r['classes'])}`);
+            const describeResult = this.metadataDescribeResult.metadataObjects;
+            for (const item of describeResult) {
+                definition.set(grouping, item[grouping]);
+            }
+            /*const r = definition.reduce((m: metadata, describe: metadata): metadata => {
+              m[describe[grouping]] = describe
+              return m
+            }, {})
+            core.info(`${JSON.stringify(r)}`)
+            core.info(`${JSON.stringify(r['classes'].inFolder)}`)
+            */
+            core.info(`${JSON.stringify((_a = definition.get('classes')) === null || _a === void 0 ? void 0 : _a.xmlName)}`);
             return definition;
         });
     }
