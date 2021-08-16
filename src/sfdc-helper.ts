@@ -72,7 +72,8 @@ class Salesforce {
       'org',
       '--json'
     ])
-    core.debug(`Output ${JSON.stringify(output)}`)
+    const stdOut = JSON.parse(output.stdout)
+    core.debug(`Output ${JSON.stringify(stdOut.metadataObjects)}`)
     return result
   }
 }
