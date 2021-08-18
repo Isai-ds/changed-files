@@ -73,12 +73,14 @@ class Salesforce {
 
   private async getDescribeMetadata(): Promise<void> {
     if (!this.metadataDescribeResult) {
-      const output = await exec.getExecOutput('sfdx', [
-        'force:mdapi:describemetadata',
-        '-u',
-        'org',
-        '--json'
-      ])
+      const api_version = core.getInput('api_version')
+      const parameters = ['force:mdapi:describemetadata', '-u', 'org', '--json']
+
+      if (api_version) {
+        parameters.push('--apiversion', api_version)
+      }
+
+      const output = await exec.getExecOutput('sfdx', parameters)
       this.metadataDescribeResult = JSON.parse(output.stdout).result
     }
   }
