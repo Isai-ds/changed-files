@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
-import * as fileHelper from './file-helper'
+import * as fileHelper from './diff-git'
 import * as sfdxIntaller from './sfdx-installer'
-import * as sfdc from './sfdc-helper'
+import * as sfdc from './sfdc-metadata-describe'
 
 async function run(): Promise<void> {
   try {

@@ -1,46 +1,46 @@
 import * as core from '@actions/core'
-import * as GithubAPIHelper from './github-api-helper'
+import * as GithubAPIHelper from './github-api'
 
-interface file {
+interface File {
   filename: string
   status: string
   sha: string
 }
-interface commited {
+interface Committed {
   added: {
-    files: file[]
+    files: File[]
   }
   modified: {
-    files: file[]
+    files: File[]
   }
   deleted: {
-    files: file[]
+    files: File[]
   }
   renamed: {
-    files: file[]
+    files: File[]
   }
   changed: {
-    files: file[]
+    files: File[]
   }
   all: {
-    added: commited['added']
-    deleted: commited['deleted']
-    modified: commited['modified']
-    renamed: commited['renamed']
-    changed: commited['changed']
+    added: Committed['added']
+    deleted: Committed['deleted']
+    modified: Committed['modified']
+    renamed: Committed['renamed']
+    changed: Committed['changed']
   }
 }
 
-export interface IFileCommited {
-  getAllFiles(): Promise<commited['all']>
+export interface IFileCommitted {
+  getAllFiles(): Promise<Committed['all']>
 }
 
-export function getInstance(): IFileCommited {
-  return new FileCommited()
+export function getInstance(): IFileCommitted {
+  return new FileCommitted()
 }
 
-class FileCommited {
-  async getAllFiles(): Promise<commited['all']> {
+class FileCommitted {
+  async getAllFiles(): Promise<Committed['all']> {
     const base = core.getInput('base_ref')
     const head = core.getInput('head_ref')
 
@@ -54,12 +54,12 @@ class FileCommited {
     return result['all']
   }
 
-  build(files: GithubAPIHelper.DiffEntry): commited {
-    const added = [] as file[]
-    const deleted = [] as file[]
-    const modified = [] as file[]
-    const renamed = [] as file[]
-    const changed = [] as file[]
+  build(files: GithubAPIHelper.DiffEntry): Committed {
+    const added = [] as File[]
+    const deleted = [] as File[]
+    const modified = [] as File[]
+    const renamed = [] as File[]
+    const changed = [] as File[]
 
     const result = {
       added: {
