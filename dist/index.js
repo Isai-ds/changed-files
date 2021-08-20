@@ -142,11 +142,12 @@ class FileDiff {
         return __awaiter(this, void 0, void 0, function* () {
             const base = core.getInput('base_ref');
             const head = core.getInput('head_ref');
-            const baseHead = `${base}..${head}`;
+            //const baseHead = `${base}..${head}`
             const parameters = [
                 '--no-pager',
                 'diff',
-                baseHead,
+                base,
+                head,
                 '--no-prefix',
                 '-U200',
                 '--',
