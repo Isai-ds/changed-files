@@ -159,7 +159,7 @@ class FileDiff {
       path
     ]
 
-    const output = await exec.getExecOutput('sfdx', parameters)
+    const output = await exec.getExecOutput('git', parameters)
     return output.stdout
   }
 }
