@@ -2,7 +2,7 @@ require('./sourcemap-register.js');module.exports =
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 7148:
+/***/ 8047:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -36,14 +36,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getInstance = void 0;
+exports.getInstanceFileDiff = exports.getInstanceFileCommitted = void 0;
 const core = __importStar(__webpack_require__(2186));
-const GithubAPIHelper = __importStar(__webpack_require__(138));
-function getInstance() {
-    return new FileCommited();
+const GithubAPIHelper = __importStar(__webpack_require__(2565));
+const exec = __importStar(__webpack_require__(1514));
+function getInstanceFileCommitted() {
+    return new FileCommitted();
 }
-exports.getInstance = getInstance;
-class FileCommited {
+exports.getInstanceFileCommitted = getInstanceFileCommitted;
+function getInstanceFileDiff() {
+    return new FileDiff();
+}
+exports.getInstanceFileDiff = getInstanceFileDiff;
+class FileCommitted {
     getAllFiles() {
         return __awaiter(this, void 0, void 0, function* () {
             const base = core.getInput('base_ref');
@@ -126,11 +131,37 @@ class FileCommited {
         return result;
     }
 }
+class FileDiff {
+    getDifferences(path) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const difference = yield this.getGitDiff(path);
+            return difference;
+        });
+    }
+    getGitDiff(path) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const base = core.getInput('base_ref');
+            const head = core.getInput('head_ref');
+            const baseHead = `${base}..${head}`;
+            const parameters = [
+                '--no-pager',
+                'diff',
+                baseHead,
+                '--no-prefix',
+                '-U200',
+                '--',
+                path
+            ];
+            const output = yield exec.getExecOutput('sfdx', parameters);
+            return output.stdout;
+        });
+    }
+}
 
 
 /***/ }),
 
-/***/ 138:
+/***/ 2565:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -248,15 +279,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__webpack_require__(2186));
-const fileHelper = __importStar(__webpack_require__(7148));
+const diffGit = __importStar(__webpack_require__(8047));
 const sfdxIntaller = __importStar(__webpack_require__(6591));
-const sfdc = __importStar(__webpack_require__(6218));
+const sfdc = __importStar(__webpack_require__(8447));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             yield sfdxIntaller.install();
-            const files = yield fileHelper.getInstance().getAllFiles();
-            core.debug(`${JSON.stringify(files)}`);
+            const gitfiles = yield diffGit.getInstanceFileCommitted().getAllFiles();
+            core.debug(`${JSON.stringify(gitfiles)}`);
+            const fileDiffService = diffGit.getInstanceFileDiff();
+            for (const f of gitfiles['modified'].files) {
+                const diff = yield fileDiffService.getDifferences(f.filename);
+                core.info('::::::::::::::::::::::::::::::::::::::::::::::::::::::::');
+                core.info(diff);
+                core.info('');
+            }
             const sfInstance = sfdc.getInstance();
             yield sfInstance.login();
             yield sfInstance.describeMetadata('directoryName');
@@ -271,7 +309,7 @@ run();
 
 /***/ }),
 
-/***/ 6218:
+/***/ 8447:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -354,12 +392,12 @@ class Salesforce {
     getDescribeMetadata() {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.metadataDescribeResult) {
-                const output = yield exec.getExecOutput('sfdx', [
-                    'force:mdapi:describemetadata',
-                    '-u',
-                    'org',
-                    '--json'
-                ]);
+                const api_version = core.getInput('api_version');
+                const parameters = ['force:mdapi:describemetadata', '-u', 'org', '--json'];
+                if (api_version) {
+                    parameters.push('--apiversion', api_version);
+                }
+                const output = yield exec.getExecOutput('sfdx', parameters);
                 this.metadataDescribeResult = JSON.parse(output.stdout).result;
             }
         });
