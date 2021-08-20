@@ -152,7 +152,7 @@ class FileDiff {
                 '--',
                 path
             ];
-            const output = yield exec.getExecOutput('sfdx', parameters);
+            const output = yield exec.getExecOutput('git', parameters);
             return output.stdout;
         });
     }
