@@ -111,7 +111,6 @@ class FileCommitted {
         status: f.status,
         sha: f.sha
       }
-      core.debug(`File commited: ${fc}`)
       switch (f.status) {
         case 'added':
           result['added']['files'].push(fc)

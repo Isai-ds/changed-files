@@ -116,6 +116,7 @@ class FileCommitted {
                     result['deleted']['files'].push(fc);
                     break;
                 case 'modified':
+                    core.info(`:::::::::::::::::::${JSON.stringify(f)}`);
                     result['modified']['files'].push(fc);
                     break;
                 case 'renamed':
