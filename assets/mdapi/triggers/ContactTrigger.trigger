@@ -1,6 +1,6 @@
+/* Added */
 trigger ContactTrigger on Contact (after insert, after update, after delete, after undelete) {
     if (Trigger.isAfter){
-
         RollUpSummary summary = RollUpSummary.getInstance();
         if (Trigger.isInsert || Trigger.isUndelete){
             for (Contact c : Trigger.new){
