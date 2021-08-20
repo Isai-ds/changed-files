@@ -1,5 +1,7 @@
 public with sharing class AmendTheSentence {
+
     public static String amendTheSentence(String s) {
+        //Test
         List<Integer> result = new List<Integer>();
         result.add( isUpperCase(s.charAt(0)) ? s.charAt(0) + 32 : s.charAt(0) );
         for (Integer i = 1; i < s.length(); i++){
