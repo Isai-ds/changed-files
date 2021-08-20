@@ -147,12 +147,13 @@ class FileDiff {
   async getGitDiff(path: string): Promise<string> {
     const base = core.getInput('base_ref')
     const head = core.getInput('head_ref')
-    const baseHead = `${base}..${head}`
+    //const baseHead = `${base}..${head}`
 
     const parameters = [
       '--no-pager',
       'diff',
-      baseHead,
+      base,
+      head,
       '--no-prefix',
       '-U200',
       '--',
