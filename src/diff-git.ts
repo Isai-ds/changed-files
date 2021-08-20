@@ -139,7 +139,7 @@ class FileCommitted {
 }
 
 class FileDiff {
-  async getDiffernces(path: string): Promise<string> {
+  async getDifferences(path: string): Promise<string> {
     const difference = await this.getGitDiff(path)
     return difference
   }
