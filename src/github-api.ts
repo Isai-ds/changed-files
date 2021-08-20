@@ -45,7 +45,10 @@ class GitAuthAPI {
     const response = await this.octokit.rest.repos.compareCommitsWithBasehead({
       owner: github.context.repo.owner,
       repo: github.context.repo.repo,
-      basehead: baseHead
+      basehead: baseHead,
+      mediaType: {
+        format: 'diff'
+      }
     })
     if (response.status !== 200) {
       const errorMessage = `Error comparing the branches ${baseHead}. Response status code: ${response.status}`
