@@ -1,46 +1,55 @@
 import * as core from '@actions/core'
-import * as GithubAPIHelper from './github-api-helper'
+import * as GithubAPIHelper from './github-api'
+import * as exec from '@actions/exec'
 
-interface file {
+interface File {
   filename: string
   status: string
   sha: string
 }
-interface commited {
+interface Committed {
   added: {
-    files: file[]
+    files: File[]
   }
   modified: {
-    files: file[]
+    files: File[]
   }
   deleted: {
-    files: file[]
+    files: File[]
   }
   renamed: {
-    files: file[]
+    files: File[]
   }
   changed: {
-    files: file[]
+    files: File[]
   }
   all: {
-    added: commited['added']
-    deleted: commited['deleted']
-    modified: commited['modified']
-    renamed: commited['renamed']
-    changed: commited['changed']
+    added: Committed['added']
+    deleted: Committed['deleted']
+    modified: Committed['modified']
+    renamed: Committed['renamed']
+    changed: Committed['changed']
   }
 }
 
-export interface IFileCommited {
-  getAllFiles(): Promise<commited['all']>
+export interface IFileCommitted {
+  getAllFiles(): Promise<Committed['all']>
 }
 
-export function getInstance(): IFileCommited {
-  return new FileCommited()
+export interface IFileDiff {
+  getDifferences(path: string): Promise<string>
 }
 
-class FileCommited {
-  async getAllFiles(): Promise<commited['all']> {
+export function getInstanceFileCommitted(): IFileCommitted {
+  return new FileCommitted()
+}
+
+export function getInstanceFileDiff(): IFileDiff {
+  return new FileDiff()
+}
+
+class FileCommitted {
+  async getAllFiles(): Promise<Committed['all']> {
     const base = core.getInput('base_ref')
     const head = core.getInput('head_ref')
 
@@ -54,12 +63,12 @@ class FileCommited {
     return result['all']
   }
 
-  build(files: GithubAPIHelper.DiffEntry): commited {
-    const added = [] as file[]
-    const deleted = [] as file[]
-    const modified = [] as file[]
-    const renamed = [] as file[]
-    const changed = [] as file[]
+  build(files: GithubAPIHelper.DiffEntry): Committed {
+    const added = [] as File[]
+    const deleted = [] as File[]
+    const modified = [] as File[]
+    const renamed = [] as File[]
+    const changed = [] as File[]
 
     const result = {
       added: {
@@ -126,5 +135,31 @@ class FileCommited {
       }
     }
     return result
+  }
+}
+
+class FileDiff {
+  async getDifferences(path: string): Promise<string> {
+    const difference = await this.getGitDiff(path)
+    return difference
+  }
+
+  async getGitDiff(path: string): Promise<string> {
+    const base = core.getInput('base_ref')
+    const head = core.getInput('head_ref')
+    const baseHead = `${base}..${head}`
+
+    const parameters = [
+      '--no-pager',
+      'diff',
+      baseHead,
+      '--no-prefix',
+      '-U200',
+      '--',
+      path
+    ]
+
+    const output = await exec.getExecOutput('sfdx', parameters)
+    return output.stdout
   }
 }

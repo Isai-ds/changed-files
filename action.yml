@@ -22,6 +22,8 @@ inputs :
     description : 'Key of encrypted certificate key'
   decryption_iv :
     description : 'IV of encrypted certificate key'
+  api_version :
+    description : 'Salesforce Api Version'
 
 runs:
   using: 'node12'
