@@ -7,8 +7,16 @@ async function run(): Promise<void> {
   try {
     await sfdxIntaller.install()
 
-    const files = await diffGit.getInstance().getAllFiles()
-    core.debug(`${JSON.stringify(files)}`)
+    const gitfiles = await diffGit.getInstanceFileCommitted().getAllFiles()
+    core.debug(`${JSON.stringify(gitfiles)}`)
+
+    const fileDiffService = diffGit.getInstanceFileDiff()
+    for (const f of gitfiles['modified'].files) {
+      const diff = await fileDiffService.getDifferences(f.filename)
+      core.info('::::::::::::::::::::::::::::::::::::::::::::::::::::::::')
+      core.info(diff)
+      core.info('')
+    }
 
     const sfInstance = sfdc.getInstance()
     await sfInstance.login()
