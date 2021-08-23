@@ -1,48 +1,18 @@
 import * as variableContext from './variable-context'
 import * as GithubAPIHelper from './github-api'
 import * as core from '@actions/core'
-
-interface File {
-  filename: string
-  status: string
-  sha: string
-  patch?: string
-}
-interface Committed {
-  added: {
-    files: File[]
-  }
-  modified: {
-    files: File[]
-  }
-  deleted: {
-    files: File[]
-  }
-  renamed: {
-    files: File[]
-  }
-  changed: {
-    files: File[]
-  }
-  all: {
-    added: Committed['added']
-    deleted: Committed['deleted']
-    modified: Committed['modified']
-    renamed: Committed['renamed']
-    changed: Committed['changed']
-  }
-}
+import {FileCommitted, PullRequestFiles} from './lib/gitDiffInterfaces'
 
 export interface IFileCommitted {
-  getAllFiles(): Promise<Committed['all']>
+  getAllFiles(): Promise<PullRequestFiles['all']>
 }
 
-export function getInstanceFileCommitted(): IFileCommitted {
-  return new FileCommitted()
+export function getInstanceFilesCommitted(): IFileCommitted {
+  return new FilesCommitted()
 }
 
-class FileCommitted {
-  async getAllFiles(): Promise<Committed['all']> {
+class FilesCommitted {
+  async getAllFiles(): Promise<PullRequestFiles['all']> {
     const base = variableContext.getGithubVariableContext().getBaseRef()['ref']
     const head = variableContext.getGithubVariableContext().getHeadRef()['ref']
 
@@ -56,12 +26,12 @@ class FileCommitted {
     return result['all']
   }
 
-  build(files: GithubAPIHelper.DiffEntry): Committed {
-    const added = [] as File[]
-    const deleted = [] as File[]
-    const modified = [] as File[]
-    const renamed = [] as File[]
-    const changed = [] as File[]
+  build(files: GithubAPIHelper.DiffEntry): PullRequestFiles {
+    const added = [] as FileCommitted[]
+    const deleted = [] as FileCommitted[]
+    const modified = [] as FileCommitted[]
+    const renamed = [] as FileCommitted[]
+    const changed = [] as FileCommitted[]
 
     const result = {
       added: {

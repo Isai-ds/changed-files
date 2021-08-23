@@ -17,6 +17,7 @@ interface ISalesforceVariableContext {
   getInstanceUrl(): string
   getDecryptionKey(): string
   getDecryptionIV(): string
+  getAPIVersion(): string
 }
 
 let githubVariableContext: IGithubVariableContext
@@ -73,5 +74,8 @@ class SalesforceVariableContext {
 
   getDecryptionIV(): string {
     return core.getInput('decryption_iv')
+  }
+  getAPIVersion(): string {
+    return core.getInput('api_version')
   }
 }

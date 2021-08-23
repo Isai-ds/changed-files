@@ -2,9 +2,10 @@ import {
   MetadataXMLDefinition,
   MetadataFileResult
 } from '../lib/metadataInterfaces'
+import {FileCommitted} from '../lib/gitDiffInterfaces'
 
 class InFileXMLDefinition implements MetadataXMLDefinition {
-  getMetadataFileResult(): MetadataFileResult {
+  getMetadataFileResult(file: FileCommitted): MetadataFileResult {
     throw new Error('Method not implemented.')
   }
   getType(): MetadataXMLDefinition {

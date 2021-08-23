@@ -86,7 +86,9 @@ class Salesforce {
 
   private async getDescribeMetadata(): Promise<void> {
     if (!this.metadataDescribeResult) {
-      const api_version = core.getInput('api_version')
+      const api_version = variableContext
+        .getSalesforceVariableContext()
+        .getAPIVersion()
       const parameters = ['force:mdapi:describemetadata', '-u', 'org', '--json']
 
       if (api_version) {

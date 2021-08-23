@@ -7,7 +7,7 @@ async function run(): Promise<void> {
   try {
     await sfdxIntaller.install()
 
-    const gitfiles = await diffGit.getInstanceFileCommitted().getAllFiles()
+    const gitfiles = await diffGit.getInstanceFilesCommitted().getAllFiles()
     core.debug(`${JSON.stringify(gitfiles)}`)
 
     const sfInstance = sfdc.getInstance()
