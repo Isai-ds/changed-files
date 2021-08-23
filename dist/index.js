@@ -2,7 +2,7 @@ require('./sourcemap-register.js');module.exports =
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 8047:
+/***/ 8856:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -36,23 +36,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getInstanceFileDiff = exports.getInstanceFileCommitted = void 0;
-const core = __importStar(__webpack_require__(2186));
+exports.getInstanceFileCommitted = void 0;
+const variableContext = __importStar(__webpack_require__(9859));
 const GithubAPIHelper = __importStar(__webpack_require__(2565));
-const exec = __importStar(__webpack_require__(1514));
+const core = __importStar(__webpack_require__(2186));
 function getInstanceFileCommitted() {
     return new FileCommitted();
 }
 exports.getInstanceFileCommitted = getInstanceFileCommitted;
-function getInstanceFileDiff() {
-    return new FileDiff();
-}
-exports.getInstanceFileDiff = getInstanceFileDiff;
 class FileCommitted {
     getAllFiles() {
         return __awaiter(this, void 0, void 0, function* () {
-            const base = core.getInput('base_ref');
-            const head = core.getInput('head_ref');
+            const base = variableContext.getGithubVariableContext().getBaseRef()['ref'];
+            const head = variableContext.getGithubVariableContext().getHeadRef()['ref'];
             core.info(`Base ref: ${base}`);
             core.info(`Head ref: ${head}`);
             const githubAPIHelper = GithubAPIHelper.getInstance();
@@ -105,7 +101,8 @@ class FileCommitted {
             const fc = {
                 filename: f.filename,
                 status: f.status,
-                sha: f.sha
+                sha: f.sha,
+                patch: f.patch
             };
             switch (f.status) {
                 case 'added':
@@ -115,7 +112,6 @@ class FileCommitted {
                     result['deleted']['files'].push(fc);
                     break;
                 case 'modified':
-                    core.info(`:::::::::::::::::::${JSON.stringify(f)}`);
                     result['modified']['files'].push(fc);
                     break;
                 case 'renamed':
@@ -129,33 +125,6 @@ class FileCommitted {
             }
         }
         return result;
-    }
-}
-class FileDiff {
-    getDifferences(path) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const difference = yield this.getGitDiff(path);
-            return difference;
-        });
-    }
-    getGitDiff(path) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const base = core.getInput('base_ref');
-            const head = core.getInput('head_ref');
-            //const baseHead = `${base}..${head}`
-            const parameters = [
-                '--no-pager',
-                'diff',
-                base,
-                head,
-                '--no-prefix',
-                '-U200',
-                '--',
-                path
-            ];
-            const output = yield exec.getExecOutput('git', parameters);
-            return output.stdout;
-        });
     }
 }
 
@@ -199,13 +168,16 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getInstance = void 0;
 const core = __importStar(__webpack_require__(2186));
 const github = __importStar(__webpack_require__(5438));
+const variableContext = __importStar(__webpack_require__(9859));
 function getInstance() {
     return new GitAuthAPI();
 }
 exports.getInstance = getInstance;
 class GitAuthAPI {
     constructor() {
-        const githubToken = core.getInput('github_token', { required: true });
+        const githubToken = variableContext
+            .getGithubVariableContext()
+            .getGithubToken();
         this.octokit = github.getOctokit(githubToken);
     }
     getFilesInPullRequest(base, head) {
@@ -280,7 +252,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__webpack_require__(2186));
-const diffGit = __importStar(__webpack_require__(8047));
+const diffGit = __importStar(__webpack_require__(8856));
 const sfdxIntaller = __importStar(__webpack_require__(6591));
 const sfdc = __importStar(__webpack_require__(8447));
 function run() {
@@ -289,13 +261,6 @@ function run() {
             yield sfdxIntaller.install();
             const gitfiles = yield diffGit.getInstanceFileCommitted().getAllFiles();
             core.debug(`${JSON.stringify(gitfiles)}`);
-            const fileDiffService = diffGit.getInstanceFileDiff();
-            for (const f of gitfiles['modified'].files) {
-                const diff = yield fileDiffService.getDifferences(f.filename);
-                core.info('::::::::::::::::::::::::::::::::::::::::::::::::::::::::');
-                core.info(diff);
-                core.info('');
-            }
             const sfInstance = sfdc.getInstance();
             yield sfInstance.login();
             yield sfInstance.describeMetadata('directoryName');
@@ -347,6 +312,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getInstance = void 0;
 const core = __importStar(__webpack_require__(2186));
 const exec = __importStar(__webpack_require__(1514));
+const variableContext = __importStar(__webpack_require__(9859));
 function getInstance() {
     return new Salesforce();
 }
@@ -354,12 +320,24 @@ exports.getInstance = getInstance;
 class Salesforce {
     login() {
         return __awaiter(this, void 0, void 0, function* () {
-            const consumerKey = core.getInput('client_id');
-            const userName = core.getInput('user_name');
-            const jwtKeyFile = core.getInput('jwt_key_file');
-            const instanceUrl = core.getInput('instance_url');
-            const decryptionKey = core.getInput('decryption_key');
-            const decryptionIV = core.getInput('decryption_iv');
+            const consumerKey = variableContext
+                .getSalesforceVariableContext()
+                .getConsumerKey();
+            const userName = variableContext
+                .getSalesforceVariableContext()
+                .getUserName();
+            const jwtKeyFile = variableContext
+                .getSalesforceVariableContext()
+                .getJWTKeyFile();
+            const instanceUrl = variableContext
+                .getSalesforceVariableContext()
+                .getInstanceUrl();
+            const decryptionKey = variableContext
+                .getSalesforceVariableContext()
+                .getDecryptionKey();
+            const decryptionIV = variableContext
+                .getSalesforceVariableContext()
+                .getDecryptionIV();
             yield exec.exec('openssl', [
                 'enc',
                 '-nosalt',
@@ -485,6 +463,84 @@ function install() {
     });
 }
 exports.install = install;
+
+
+/***/ }),
+
+/***/ 9859:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getSalesforceVariableContext = exports.getGithubVariableContext = void 0;
+const core = __importStar(__webpack_require__(2186));
+let githubVariableContext;
+let salesforceVariableContext;
+function getGithubVariableContext() {
+    if (githubVariableContext) {
+        githubVariableContext = new GithubVariableContext();
+    }
+    return githubVariableContext;
+}
+exports.getGithubVariableContext = getGithubVariableContext;
+function getSalesforceVariableContext() {
+    if (salesforceVariableContext) {
+        salesforceVariableContext = new SalesforceVariableContext();
+    }
+    return salesforceVariableContext;
+}
+exports.getSalesforceVariableContext = getSalesforceVariableContext;
+class GithubVariableContext {
+    getGithubToken() {
+        return core.getInput('github_token', { required: true });
+    }
+    getBaseRef() {
+        return JSON.parse(core.getInput('base_ref'));
+    }
+    getHeadRef() {
+        return JSON.parse(core.getInput('head_ref'));
+    }
+}
+class SalesforceVariableContext {
+    getConsumerKey() {
+        return core.getInput('client_id');
+    }
+    getUserName() {
+        return core.getInput('user_name');
+    }
+    getJWTKeyFile() {
+        return core.getInput('jwt_key_file');
+    }
+    getInstanceUrl() {
+        return core.getInput('instance_url');
+    }
+    getDecryptionKey() {
+        return core.getInput('decryption_key');
+    }
+    getDecryptionIV() {
+        return core.getInput('decryption_iv');
+    }
+}
 
 
 /***/ }),

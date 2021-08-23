@@ -1,11 +1,12 @@
-import * as core from '@actions/core'
+import * as variableContext from './variable-context'
 import * as GithubAPIHelper from './github-api'
-import * as exec from '@actions/exec'
+import * as core from '@actions/core'
 
 interface File {
   filename: string
   status: string
   sha: string
+  patch?: string
 }
 interface Committed {
   added: {
@@ -36,22 +37,14 @@ export interface IFileCommitted {
   getAllFiles(): Promise<Committed['all']>
 }
 
-export interface IFileDiff {
-  getDifferences(path: string): Promise<string>
-}
-
 export function getInstanceFileCommitted(): IFileCommitted {
   return new FileCommitted()
 }
 
-export function getInstanceFileDiff(): IFileDiff {
-  return new FileDiff()
-}
-
 class FileCommitted {
   async getAllFiles(): Promise<Committed['all']> {
-    const base = core.getInput('base_ref')
-    const head = core.getInput('head_ref')
+    const base = variableContext.getGithubVariableContext().getBaseRef()['ref']
+    const head = variableContext.getGithubVariableContext().getHeadRef()['ref']
 
     core.info(`Base ref: ${base}`)
     core.info(`Head ref: ${head}`)
@@ -109,7 +102,8 @@ class FileCommitted {
       const fc = {
         filename: f.filename,
         status: f.status,
-        sha: f.sha
+        sha: f.sha,
+        patch: f.patch
       }
       switch (f.status) {
         case 'added':
@@ -119,7 +113,6 @@ class FileCommitted {
           result['deleted']['files'].push(fc)
           break
         case 'modified':
-          core.info(`:::::::::::::::::::${JSON.stringify(f)}`)
           result['modified']['files'].push(fc)
           break
         case 'renamed':
@@ -135,32 +128,5 @@ class FileCommitted {
       }
     }
     return result
-  }
-}
-
-class FileDiff {
-  async getDifferences(path: string): Promise<string> {
-    const difference = await this.getGitDiff(path)
-    return difference
-  }
-
-  async getGitDiff(path: string): Promise<string> {
-    const base = core.getInput('base_ref')
-    const head = core.getInput('head_ref')
-    //const baseHead = `${base}..${head}`
-
-    const parameters = [
-      '--no-pager',
-      'diff',
-      base,
-      head,
-      '--no-prefix',
-      '-U200',
-      '--',
-      path
-    ]
-
-    const output = await exec.getExecOutput('git', parameters)
-    return output.stdout
   }
 }

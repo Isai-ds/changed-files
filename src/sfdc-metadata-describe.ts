@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
+import * as variableContext from './variable-context'
 interface metadataObject {
   childXmlNames?: string[]
   directoryName: string
@@ -33,12 +34,24 @@ class Salesforce {
   metadataDescribeResult!: metadataDescribe
 
   async login(): Promise<void> {
-    const consumerKey = core.getInput('client_id')
-    const userName = core.getInput('user_name')
-    const jwtKeyFile = core.getInput('jwt_key_file')
-    const instanceUrl = core.getInput('instance_url')
-    const decryptionKey = core.getInput('decryption_key')
-    const decryptionIV = core.getInput('decryption_iv')
+    const consumerKey = variableContext
+      .getSalesforceVariableContext()
+      .getConsumerKey()
+    const userName = variableContext
+      .getSalesforceVariableContext()
+      .getUserName()
+    const jwtKeyFile = variableContext
+      .getSalesforceVariableContext()
+      .getJWTKeyFile()
+    const instanceUrl = variableContext
+      .getSalesforceVariableContext()
+      .getInstanceUrl()
+    const decryptionKey = variableContext
+      .getSalesforceVariableContext()
+      .getDecryptionKey()
+    const decryptionIV = variableContext
+      .getSalesforceVariableContext()
+      .getDecryptionIV()
 
     await exec.exec('openssl', [
       'enc',

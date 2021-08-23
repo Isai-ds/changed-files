@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import {components} from '@octokit/openapi-types'
+import * as variableContext from './variable-context'
 
 export type DiffEntry = components['schemas']['diff-entry'][]
 type FileResponse = DiffEntry | undefined
@@ -17,7 +18,9 @@ class GitAuthAPI {
   private octokit
 
   constructor() {
-    const githubToken = core.getInput('github_token', {required: true})
+    const githubToken = variableContext
+      .getGithubVariableContext()
+      .getGithubToken()
     this.octokit = github.getOctokit(githubToken)
   }
 
