@@ -23,14 +23,14 @@ let githubVariableContext: IGithubVariableContext
 let salesforceVariableContext: ISalesforceVariableContext
 
 export function getGithubVariableContext(): IGithubVariableContext {
-  if (githubVariableContext) {
+  if (!githubVariableContext) {
     githubVariableContext = new GithubVariableContext()
   }
   return githubVariableContext
 }
 
 export function getSalesforceVariableContext(): ISalesforceVariableContext {
-  if (salesforceVariableContext) {
+  if (!salesforceVariableContext) {
     salesforceVariableContext = new SalesforceVariableContext()
   }
   return salesforceVariableContext

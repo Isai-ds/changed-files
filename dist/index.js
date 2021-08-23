@@ -497,14 +497,14 @@ const core = __importStar(__webpack_require__(2186));
 let githubVariableContext;
 let salesforceVariableContext;
 function getGithubVariableContext() {
-    if (githubVariableContext) {
+    if (!githubVariableContext) {
         githubVariableContext = new GithubVariableContext();
     }
     return githubVariableContext;
 }
 exports.getGithubVariableContext = getGithubVariableContext;
 function getSalesforceVariableContext() {
-    if (salesforceVariableContext) {
+    if (!salesforceVariableContext) {
         salesforceVariableContext = new SalesforceVariableContext();
     }
     return salesforceVariableContext;
