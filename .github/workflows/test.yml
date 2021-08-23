@@ -26,8 +26,8 @@ jobs:
       - uses: ./
         with:
           github_token: ${{ github.token }}
-          base_ref: ${{ github.event.pull_request.base }}
-          head_ref: ${{ github.event.pull_request.head }}
+          base_ref: ${{ toJson(github.event.pull_request.base) }}
+          head_ref: ${{ toJson(github.event.pull_request.head) }}
           client_id: ${{ secrets.CLIENT_ID }}
           user_name: ${{ secrets.USER_NAME }}
           jwt_key_file: assets/server.key.enc
