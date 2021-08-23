@@ -19,4 +19,4 @@ class InFolderXMLDefinition
 }
 
 export class Documents extends InFolderXMLDefinition {}
-export class Emails extends InFolderXMLDefinition {}
+export class Email extends InFolderXMLDefinition {}

@@ -1,29 +1,17 @@
-import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import * as variableContext from './variable-context'
-interface metadataObject {
-  childXmlNames?: string[]
-  directoryName: string
-  inFolder: boolean
-  metaFile: boolean
-  suffix?: string
-  xmlName: string
-}
+import {
+  MetadataObject,
+  MetadataDescribe
+} from './lib/metadataDescribeInterfaces'
 
 type metadata = {
   [key: string]: any
 }
 
-interface metadataDescribe {
-  metadataObjects: metadataObject[]
-  organizationNamespace: string
-  partialSaveAllowed: boolean
-  testRequired: boolean
-}
-
 export interface ISalesforce {
   login(): Promise<void>
-  describeMetadata(grouping: string): Promise<Map<string, metadataObject>>
+  describeMetadata(grouping: string): Promise<Map<string, MetadataObject>>
 }
 
 export function getInstance(): ISalesforce {
@@ -31,7 +19,7 @@ export function getInstance(): ISalesforce {
 }
 
 class Salesforce {
-  metadataDescribeResult!: metadataDescribe
+  metadataDescribeResult!: MetadataDescribe
 
   async login(): Promise<void> {
     const consumerKey = variableContext
@@ -100,15 +88,15 @@ class Salesforce {
     }
   }
 
-  async describeMetadata(grouping: string): Promise<Map<string, metadataObject>> {
-    const definition = new Map<string, metadataObject>()
+  async describeMetadata(grouping: string): Promise<Map<string, MetadataObject>> {
+    const definition = new Map<string, MetadataObject>()
     await this.getDescribeMetadata()
 
     const describeResult: metadata[] = this.metadataDescribeResult
       .metadataObjects
 
     for (const item of describeResult) {
-      const o = {} as metadataObject
+      const o = {} as MetadataObject
       o.childXmlNames = item.childXmlNames
       o.directoryName = item.directoryName
       o.inFolder = item.inFolder
