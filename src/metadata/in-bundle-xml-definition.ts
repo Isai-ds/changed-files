@@ -3,16 +3,25 @@ import {
   MetadataFileResult
 } from '../lib/metadataInterfaces'
 import {FileCommitted} from '../lib/gitDiffInterfaces'
+import {MetadataObject} from '../lib/metadataDescribeInterfaces'
 
 class InBundleXMLDefinition implements MetadataXMLDefinition {
-  getMetadataFileResult(file: FileCommitted): MetadataFileResult {
+  protected describeMetadata: MetadataObject
+  protected file: FileCommitted
+
+  constructor(describeMetadata: MetadataObject, file: FileCommitted) {
+    this.describeMetadata = describeMetadata
+    this.file = file
+  }
+
+  getMetadataFileResult(): MetadataFileResult {
     throw new Error('Method not implemented.')
   }
 
-  getType(): MetadataXMLDefinition {
-    throw new Error('Method not implemented.')
+  getType(): string {
+    return this.describeMetadata.xmlName
   }
 }
 
-export class AuraBundle extends InBundleXMLDefinition {}
-export class WebComponent extends InBundleXMLDefinition {}
+export class AuraDefinitionBundle extends InBundleXMLDefinition {}
+export class LightningComponentBundle extends InBundleXMLDefinition {}

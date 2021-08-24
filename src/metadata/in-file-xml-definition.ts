@@ -3,17 +3,27 @@ import {
   MetadataFileResult
 } from '../lib/metadataInterfaces'
 import {FileCommitted} from '../lib/gitDiffInterfaces'
+import {MetadataObject} from '../lib/metadataDescribeInterfaces'
 
 class InFileXMLDefinition implements MetadataXMLDefinition {
-  getMetadataFileResult(file: FileCommitted): MetadataFileResult {
+  protected describeMetadata: MetadataObject
+  protected file: FileCommitted
+
+  constructor(describeMetadata: MetadataObject, file: FileCommitted) {
+    this.describeMetadata = describeMetadata
+    this.file = file
+  }
+
+  getMetadataFileResult(): MetadataFileResult {
     throw new Error('Method not implemented.')
   }
-  getType(): MetadataXMLDefinition {
-    throw new Error('Method not implemented.')
+
+  getType(): string {
+    return this.describeMetadata.xmlName
   }
 }
 
 export class CustomObject extends InFileXMLDefinition {}
-export class Label extends InFileXMLDefinition {}
+export class CustomLabel extends InFileXMLDefinition {}
 export class Profile extends InFileXMLDefinition {}
-export class SharingRules extends InFileXMLDefinition {}
+export class SharingRule extends InFileXMLDefinition {}

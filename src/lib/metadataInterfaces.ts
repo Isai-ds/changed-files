@@ -6,8 +6,8 @@ export interface MetadataFileResult {
 }
 
 export interface MetadataXMLDefinition {
-  getMetadataFileResult(file: FileCommitted): MetadataFileResult
-  getType(): MetadataXMLDefinition
+  getMetadataFileResult(): MetadataFileResult
+  getType(): string
 }
 
 export interface MetaXMLDefinition {

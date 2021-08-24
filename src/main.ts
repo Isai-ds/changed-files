@@ -12,7 +12,14 @@ async function run(): Promise<void> {
     const sfInstance = sfdc.getInstance()
     await sfInstance.login()
     const metadataDescribe = await sfInstance.describeMetadata('directoryName')
-    metadataFileManager.execute(gitFiles, metadataDescribe)
+    const metadataXMLDefinition = metadataFileManager.execute(
+      gitFiles,
+      metadataDescribe
+    )
+
+    for (const m of metadataXMLDefinition) {
+      core.info(String(m.getType()))
+    }
   } catch (error) {
     core.setFailed(error.message)
   }

@@ -4,19 +4,30 @@ import {
   MetaXMLDefinition
 } from '../lib/metadataInterfaces'
 import {FileCommitted} from '../lib/gitDiffInterfaces'
+import {MetadataObject} from '../lib/metadataDescribeInterfaces'
 
 class InFolderXMLDefinition
   implements MetadataXMLDefinition, MetaXMLDefinition {
+  protected describeMetadata: MetadataObject
+  protected file: FileCommitted
+
+  constructor(describeMetadata: MetadataObject, file: FileCommitted) {
+    this.describeMetadata = describeMetadata
+    this.file = file
+  }
+
   getMetaDefinition(): string {
     throw new Error('Method not implemented.')
   }
-  getMetadataFileResult(file: FileCommitted): MetadataFileResult {
+
+  getMetadataFileResult(): MetadataFileResult {
     throw new Error('Method not implemented.')
   }
-  getType(): MetadataXMLDefinition {
-    throw new Error('Method not implemented.')
+
+  getType(): string {
+    return this.describeMetadata.xmlName
   }
 }
 
-export class Documents extends InFolderXMLDefinition {}
-export class Email extends InFolderXMLDefinition {}
+export class Document extends InFolderXMLDefinition {}
+export class EmailTemplate extends InFolderXMLDefinition {}
