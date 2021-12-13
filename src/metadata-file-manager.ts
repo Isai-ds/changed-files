@@ -13,6 +13,8 @@ import {SimpleXMLDefinition} from './metadata/simple-xml-definition'
 import {MetadataXMLDefinition} from './lib/metadataInterfaces'
 import {FileCommitted, PullRequestFiles} from './lib/gitDiffInterfaces'
 import {MetadataObject} from './lib/metadataDescribeInterfaces'
+import {MetadataConstants} from './Constants'
+import * as path from 'path'
 
 interface IMetadataFileManager {
   execute(
@@ -21,40 +23,38 @@ interface IMetadataFileManager {
   ): void
 }
 
+interface Metadata {
+  [key: string]: MetadataXMLDefinition
+}
 class MetadataFileManager implements IMetadataFileManager {
   private files: PullRequestFiles['all']
   private describeMetadataMap: Map<string, MetadataObject>
+  private metadataXMLDefinitions: Map<string, MetadataXMLDefinition>
+  private metaFileMap: Map<string, FileCommitted>
+
   constructor(
     files: PullRequestFiles['all'],
     describeMetadataMap: Map<string, MetadataObject>
   ) {
     this.files = files
     this.describeMetadataMap = describeMetadataMap
+    this.metadataXMLDefinitions = new Map<string, MetadataXMLDefinition>()
+    this.metaFileMap = new Map<string, FileCommitted>()
   }
 
   execute(): Iterable<MetadataXMLDefinition> {
-    const metadataXMLDefinitions: MetadataXMLDefinition[] = []
-    metadataXMLDefinitions.push(
-      ...this.getMetadataXMLDefinitions(this.files.added.files)
-    )
-    metadataXMLDefinitions.push(
-      ...this.getMetadataXMLDefinitions(this.files.changed.files)
-    )
-    metadataXMLDefinitions.push(
-      ...this.getMetadataXMLDefinitions(this.files.deleted.files)
-    )
-    metadataXMLDefinitions.push(
-      ...this.getMetadataXMLDefinitions(this.files.modified.files)
-    )
-    return {
-      [Symbol.iterator]: () => {
-        return new MetadataXMLDefinitionIterator(metadataXMLDefinitions)
-      }
-    }
+    this.getMetadataXMLDefinitions(this.files.added.files)
+
+    this.getMetadataXMLDefinitions(this.files.changed.files)
+
+    this.getMetadataXMLDefinitions(this.files.deleted.files)
+
+    this.getMetadataXMLDefinitions(this.files.modified.files)
+
+    return this.metadataXMLDefinitions.values()
   }
 
-  getMetadataXMLDefinitions(files: FileCommitted[]): MetadataXMLDefinition[] {
-    const metadataXMLDefinitions: MetadataXMLDefinition[] = []
+  getMetadataXMLDefinitions(files: FileCommitted[]): void {
     for (const file of files) {
       for (const key of this.describeMetadataMap.keys()) {
         if (file.filename.includes(key)) {
@@ -64,13 +64,20 @@ class MetadataFileManager implements IMetadataFileManager {
               describeMetadata,
               file
             )
-            metadataXMLDefinitions.push(metadataXMLDefinition)
+            if (file.filename.includes(MetadataConstants.META_SUFIX)) {
+              const name = path
+                .basename(file.filename)
+                .replace(MetadataConstants.META_SUFIX, '')
+              this.metaFileMap.set(name, file)
+            } else {
+              const name = path.basename(file.filename)
+              this.metadataXMLDefinitions.set(name, metadataXMLDefinition)
+            }
           }
           break
         }
       }
     }
-    return metadataXMLDefinitions
   }
 
   createMetadataXMLInstance(
@@ -80,7 +87,7 @@ class MetadataFileManager implements IMetadataFileManager {
     switch (describeMetadata.xmlName) {
       case 'AuraDefinitionBundle':
         return new AuraDefinitionBundle(describeMetadata, file)
-      case 'LightningComponentBundle': 
+      case 'LightningComponentBundle':
         return new LightningComponentBundle(describeMetadata, file)
       case 'CustomObject':
         return new CustomObject(describeMetadata, file)
@@ -97,28 +104,6 @@ class MetadataFileManager implements IMetadataFileManager {
       default:
         return new SimpleXMLDefinition(describeMetadata, file)
     }
-  }
-}
-
-class MetadataXMLDefinitionIterator implements Iterator<MetadataXMLDefinition> {
-  private metadataXMLDefinitions: MetadataXMLDefinition[]
-  private index = 0
-  constructor(metadataXMLDefinitions: MetadataXMLDefinition[]) {
-    this.metadataXMLDefinitions = metadataXMLDefinitions
-  }
-  private hasNext(): boolean {
-    return this.index < this.metadataXMLDefinitions.length
-  }
-
-  next(): IteratorResult<MetadataXMLDefinition> {
-    if (this.hasNext()) {
-      this.index++
-      return {
-        done: !this.hasNext(),
-        value: this.metadataXMLDefinitions[this.index - 1]
-      }
-    }
-    return {done: true, value: undefined}
   }
 }
 

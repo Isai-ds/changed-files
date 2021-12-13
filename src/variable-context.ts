@@ -20,8 +20,13 @@ interface ISalesforceVariableContext {
   getAPIVersion(): string
 }
 
+interface IOutputPackageVariableContext {
+  getOutputDir(): string
+}
+
 let githubVariableContext: IGithubVariableContext
 let salesforceVariableContext: ISalesforceVariableContext
+let outputPackageVariableContext: IOutputPackageVariableContext
 
 export function getGithubVariableContext(): IGithubVariableContext {
   if (!githubVariableContext) {
@@ -35,6 +40,13 @@ export function getSalesforceVariableContext(): ISalesforceVariableContext {
     salesforceVariableContext = new SalesforceVariableContext()
   }
   return salesforceVariableContext
+}
+
+export function getRepoVariableContext(): IOutputPackageVariableContext {
+  if (!outputPackageVariableContext) {
+    outputPackageVariableContext = new OutputPackageVariableContext()
+  }
+  return outputPackageVariableContext
 }
 
 class GithubVariableContext {
@@ -75,7 +87,14 @@ class SalesforceVariableContext {
   getDecryptionIV(): string {
     return core.getInput('decryption_iv')
   }
+
   getAPIVersion(): string {
     return core.getInput('api_version')
+  }
+}
+
+class OutputPackageVariableContext {
+  getOutputDir(): string {
+    return core.getInput('output_dir')
   }
 }

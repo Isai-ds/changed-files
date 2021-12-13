@@ -24,6 +24,8 @@ inputs :
     description : 'IV of encrypted certificate key'
   api_version :
     description : 'Salesforce Api Version'
+  output_dir :
+    description : 'Directory where the package will be created'
 
 runs:
   using: 'node12'

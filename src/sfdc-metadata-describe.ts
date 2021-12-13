@@ -88,7 +88,9 @@ class Salesforce {
     }
   }
 
-  async describeMetadata(grouping: string): Promise<Map<string, MetadataObject>> {
+  async describeMetadata(
+    grouping: string
+  ): Promise<Map<string, MetadataObject>> {
     const definition = new Map<string, MetadataObject>()
     await this.getDescribeMetadata()
 

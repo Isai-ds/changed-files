@@ -1,6 +1,7 @@
 import {FileCommitted} from './gitDiffInterfaces'
 
 export interface MetadataFileResult {
+  xmlName: string
   manifestXML: string
   destructiveXML: string
 }

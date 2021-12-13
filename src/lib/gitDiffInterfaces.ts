@@ -28,3 +28,8 @@ export interface PullRequestFiles {
     changed: PullRequestFiles['changed']
   }
 }
+
+export interface GitDiffOperations {
+  added(): void
+  modified(): void
+}
